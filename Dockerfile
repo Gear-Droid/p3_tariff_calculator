@@ -1,6 +1,4 @@
-FROM eclipse-temurin:17.0.9_9-jre-ubi9-minimal
-
-ENV JAVA_TOOL_OPTIONS='-agentlib:jdwp=transport=dt_socket,address=*:7001,server=y,suspend=n'
+FROM eclipse-temurin:21.0.5_11-jre-ubi9-minimal
 
 ARG JAR="app/target/app-1.0-SNAPSHOT.jar"
 

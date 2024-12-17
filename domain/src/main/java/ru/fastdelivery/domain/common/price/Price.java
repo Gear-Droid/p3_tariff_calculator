@@ -2,19 +2,30 @@ package ru.fastdelivery.domain.common.price;
 
 import ru.fastdelivery.domain.common.currency.Currency;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
+ * Цена
+ *
  * @param amount   значение цены
  * @param currency валюта цены
  */
 public record Price(
         BigDecimal amount,
-        Currency currency) {
+        Currency currency
+) implements Serializable {
     public Price {
-        if (isLessThanZero(amount)) {
-            throw new IllegalArgumentException("Price Amount cannot be below Zero!");
+        if (amount == null || isLessThanZero(amount)) {
+            throw new IllegalArgumentException("Price Amount cannot be null or below Zero!");
         }
+
+        if (currency == null) {
+            throw new IllegalArgumentException("Price Currency cannot be null!");
+        }
+
+        amount = amount.setScale(2, RoundingMode.HALF_UP);
     }
 
     private static boolean isLessThanZero(BigDecimal price) {
@@ -22,13 +33,32 @@ public record Price(
     }
 
     public Price multiply(BigDecimal amount) {
-        return new Price(this.amount.multiply(amount), this.currency);
+        return multiply(amount, RoundingMode.HALF_UP);
+    }
+
+    public Price multiply(BigDecimal amount, RoundingMode rm) {
+        return new Price(
+                this.amount
+                        .multiply(amount)
+                        .setScale(2, rm),
+                this.currency
+        );
     }
 
     public Price max(Price price) {
         if (!currency.equals(price.currency)) {
             throw new IllegalArgumentException("Cannot compare Prices in difference Currency!");
         }
-        return new Price(this.amount.max(price.amount), this.currency);
+
+        return new Price(
+                this.amount
+                        .max(price.amount),
+                this.currency
+        );
+    }
+
+    @Override
+    public String toString() {
+        return "%s(%s)".formatted(amount, currency);
     }
 }

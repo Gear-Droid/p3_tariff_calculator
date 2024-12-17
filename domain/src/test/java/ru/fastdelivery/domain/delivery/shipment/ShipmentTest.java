@@ -1,9 +1,9 @@
 package ru.fastdelivery.domain.delivery.shipment;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.fastdelivery.domain.common.currency.CurrencyFactory;
-import ru.fastdelivery.domain.common.weight.Weight;
-import ru.fastdelivery.domain.delivery.pack.Pack;
+import ru.fastdelivery.domain.TestUtils;
+import ru.fastdelivery.domain.common.dimensions.OuterDimensions;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -12,16 +12,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ShipmentTest {
 
+    private Shipment createTestShipment() {
+        return TestUtils.createTestShipment(
+                List.of(
+                        TestUtils.createTestPack(
+                                TestUtils.createTestWeight("10"),
+                                TestUtils.createTestDimensions(1, 1, 1)
+                        ),
+                        TestUtils.createTestPack(
+                                TestUtils.createTestWeight("1"),
+                                TestUtils.createTestDimensions(100, 100, 100)
+                        )
+                ),
+                TestUtils.createTestCurrency("RUB", code -> true),
+                TestUtils.createTestCoordinates("1", "1"),
+                TestUtils.createTestCoordinates("10", "10")
+        );
+    }
+
     @Test
+    @DisplayName("При расчете суммарного веса -> корректное значение")
     void whenSummarizingWeightOfAllPackages_thenReturnSum() {
-        var weight1 = new Weight(BigInteger.TEN);
-        var weight2 = new Weight(BigInteger.ONE);
+        var massOfShipment = createTestShipment()
+                .weightAllPackages();
 
-        var packages = List.of(new Pack(weight1), new Pack(weight2));
-        var shipment = new Shipment(packages, new CurrencyFactory(code -> true).create("RUB"));
+        assertThat(massOfShipment.weightGrams())
+                .isEqualByComparingTo(BigInteger.valueOf(11));
+    }
 
-        var massOfShipment = shipment.weightAllPackages();
+    @Test
+    @DisplayName("При расчете нормированного объема -> корректное значение")
+    void whenGetNormalizedAllPackagesVolume_thenReturnCorrectVolume() {
+        var normalizedVolume = createTestShipment()
+                .getNormalizedAllPackagesVolume();
 
-        assertThat(massOfShipment.weightGrams()).isEqualByComparingTo(BigInteger.valueOf(11));
+        var pack1Volume = Math.pow(OuterDimensions.NORMALIZATION_VALUE, 3);
+        var pack2Volume = Math.pow(OuterDimensions.NORMALIZATION_VALUE * 2, 3);
+        long expected = (long) (pack1Volume + pack2Volume);
+
+        assertThat(normalizedVolume.mm3())
+                .isEqualByComparingTo(BigInteger.valueOf(expected));
     }
 }

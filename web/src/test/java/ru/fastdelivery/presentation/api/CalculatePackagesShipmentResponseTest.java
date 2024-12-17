@@ -1,18 +1,18 @@
-package ru.fastdelivery.presentation.api.request;
+package ru.fastdelivery.presentation.api;
 
 import org.assertj.core.util.BigDecimalComparator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
 import ru.fastdelivery.domain.common.price.Price;
-import ru.fastdelivery.presentation.api.response.CalculatePackagesResponse;
+import ru.fastdelivery.presentation.api.response.CalculatePackagesShipmentResponse;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class CalculatePackagesResponseTest {
+class CalculatePackagesShipmentResponseTest {
 
     @Test
     @DisplayName("Если валюты разные -> ошибка создания объекта")
@@ -21,7 +21,7 @@ class CalculatePackagesResponseTest {
         var minimalPrice = new Price(new BigDecimal(5), new CurrencyFactory(code -> true).create("RUB"));
 
         assertThrows(IllegalArgumentException.class,
-                () -> new CalculatePackagesResponse(calculatedPrice, minimalPrice));
+                () -> new CalculatePackagesShipmentResponse(calculatedPrice, minimalPrice));
     }
 
     @Test
@@ -31,10 +31,10 @@ class CalculatePackagesResponseTest {
         var calculatedPrice = new Price(new BigDecimal(100), usd);
         var minimalPrice = new Price(new BigDecimal(5), usd);
 
-        var expected = new CalculatePackagesResponse(
+        var expected = new CalculatePackagesShipmentResponse(
                 new BigDecimal(100), new BigDecimal(5), usd.getCode());
 
-        var actual = new CalculatePackagesResponse(calculatedPrice, minimalPrice);
+        var actual = new CalculatePackagesShipmentResponse(calculatedPrice, minimalPrice);
 
         assertThat(actual).usingRecursiveComparison()
                 .withComparatorForType(BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)

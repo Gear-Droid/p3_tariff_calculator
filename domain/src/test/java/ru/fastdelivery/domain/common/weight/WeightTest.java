@@ -22,6 +22,7 @@ class WeightTest {
     }
 
     @Test
+    @DisplayName("Создание второго экземпляра -> значения и хэш-код равны")
     void equalsTypeWidth_same() {
         var weight = new Weight(new BigInteger("1000"));
         var weightSame = new Weight(new BigInteger("1000"));
@@ -32,6 +33,7 @@ class WeightTest {
     }
 
     @Test
+    @DisplayName("Создание экземпляра -> не null")
     void equalsNull_false() {
         var weight = new Weight(new BigInteger("4"));
 

@@ -12,8 +12,8 @@ import java.math.RoundingMode;
 public record Weight(BigInteger weightGrams) implements Comparable<Weight> {
 
     public Weight {
-        if (isLessThanZero(weightGrams)) {
-            throw new IllegalArgumentException("Weight cannot be below Zero!");
+        if (weightGrams == null || isLessThanZero(weightGrams)) {
+            throw new IllegalArgumentException("Weight cannot be null or below Zero!");
         }
     }
 

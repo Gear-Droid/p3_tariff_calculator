@@ -9,7 +9,8 @@ public record ApiError(
         String status,
         String message
 ) {
-    public static ApiError badRequest(String message){
+
+    public static ApiError badRequest(String message) {
         return new ApiError(HttpStatus.BAD_REQUEST, "error", message);
     }
 }

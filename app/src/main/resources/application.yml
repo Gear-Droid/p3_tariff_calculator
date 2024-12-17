@@ -1,7 +1,51 @@
+spring:
+  main:
+    name: tariff-calculator
+  cache:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 currency:
   available:
     - "RUB"
-cost:
+    - "GBP"
+
+coordinates:
+  minKm: 450
+  latitude:
+    min: 45
+    max: 65
+  longitude:
+    min: 30
+    max: 96
+
+costs:
   rub:
-    perKg: 400
     minimal: 350
+    perKg: 400
+    perM3: 1000
+  gbp:
+    minimal: 3.50
+    perKg: 4.00
+    perM3: 10
+  usd:
+    minimal: 2.50
+    perKg: 3.0
+    perM3: 9.0
+
+testcontainers:
+  reuse:
+    enable: true
+
+app:
+  redis:
+    enable: true
+  cache:
+    cacheNames:
+      - priceByCoordinatesAndBasePrice
+    caches:
+      priceByCoordinatesAndBasePrice:
+        expiry: 10m
